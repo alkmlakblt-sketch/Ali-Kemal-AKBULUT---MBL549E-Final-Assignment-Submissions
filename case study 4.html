@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLW — Information Visualization Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:   #0f0b07;
+  --paper: #f2ead8;
+  --gold:  #c8921e;
+  --amber: #e8a832;
+  --rust:  #9e3a1a;
+  --sand:  #d4b882;
+  --warm:  #7a5c38;
+  --dim:   #3d2e1a;
+  --mid:   #5a4030;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+}
+
+/* ── PAGE SECTIONS ── */
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 60px 48px;
+}
+
+/* ── COVER ── */
+.cover {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+.cover::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(200,146,30,0.03) 0px, rgba(200,146,30,0.03) 1px, transparent 1px, transparent 60px),
+    repeating-linear-gradient(0deg,  rgba(200,146,30,0.03) 0px, rgba(200,146,30,0.03) 1px, transparent 1px, transparent 60px);
+}
+.cover-inner { position: relative; z-index: 1; }
+.cover-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 24px;
+}
+.cover h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(40px, 6vw, 80px);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -1px;
+  margin-bottom: 20px;
+}
+.cover h1 em { font-style: italic; color: var(--amber); }
+.cover-desc {
+  font-size: 15px;
+  color: rgba(242,234,216,0.55);
+  max-width: 500px;
+  line-height: 1.8;
+  margin-bottom: 48px;
+}
+.cover-meta {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.cover-meta-item { border-left: 2px solid var(--rust); padding-left: 16px; }
+.cover-meta-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--paper);
+  display: block;
+  line-height: 1;
+}
+.cover-meta-lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--warm);
+  margin-top: 4px;
+}
+.scroll-hint {
+  position: absolute;
+  bottom: 40px;
+  left: 48px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--dim);
+  z-index: 1;
+}
+
+/* ── DIVIDER ── */
+.divider { border: none; border-top: 1px solid rgba(200,146,30,0.15); margin: 0; }
+
+/* ── REPORT SECTIONS ── */
+.section-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--rust);
+  margin-bottom: 8px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--paper);
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+.body-text {
+  font-size: 14px;
+  color: rgba(242,234,216,0.7);
+  line-height: 1.9;
+  max-width: 680px;
+  margin-bottom: 16px;
+}
+.body-text strong { color: var(--amber); font-weight: 500; }
+.body-text em { font-style: italic; color: var(--sand); }
+
+/* Design choices grid */
+.choices-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+.choice-card {
+  border: 1px solid rgba(200,146,30,0.15);
+  padding: 16px 18px;
+  border-radius: 2px;
+}
+.choice-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.choice-text {
+  font-size: 12.5px;
+  color: rgba(242,234,216,0.6);
+  line-height: 1.7;
+}
+
+/* Reflection cards */
+.reflection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+.ref-card {
+  border-left: 2px solid var(--rust);
+  padding: 16px 20px;
+  background: rgba(200,146,30,0.03);
+}
+.ref-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  color: rgba(200,146,30,0.2);
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.ref-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.ref-body {
+  font-size: 12.5px;
+  color: rgba(242,234,216,0.55);
+  line-height: 1.75;
+}
+
+/* ── TREE SECTION ── */
+.tree-section {
+  background: var(--ink);
+  padding: 40px 0 20px;
+}
+.tree-header {
+  text-align: center;
+  padding: 0 48px 20px;
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  flex-wrap: wrap;
+  padding: 0 20px 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.leg-item { display: flex; align-items: center; gap: 8px; color: var(--warm); }
+.leg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+/* Tree container */
+#tree-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 20px;
+}
+#tree-container svg { width: 100%; max-width: 1060px; height: auto; display: block; }
+
+/* Tooltip */
+.tooltip {
+  position: fixed;
+  background: #1a1208;
+  border: 1px solid rgba(200,146,30,0.4);
+  color: var(--paper);
+  padding: 8px 12px;
+  border-radius: 3px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  pointer-events: none;
+  z-index: 100;
+  max-width: 220px;
+  line-height: 1.6;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.tooltip.visible { opacity: 1; }
+.tooltip .tt-name { color: var(--amber); margin-bottom: 2px; }
+.tooltip .tt-type { color: var(--warm); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
+
+/* ── FOOTER ── */
+.report-footer {
+  text-align: center;
+  padding: 24px 48px 40px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+.report-footer span { color: var(--mid); }
+</style>
+</head>
+<body>
+
+<!-- ── COVER ── -->
+<div class="cover">
+  <div class="cover-inner">
+    <p class="cover-tag">MBL549E · Case Study 4 · Information Visualization</p>
+    <h1>Residential Works<br>of <em>Frank Lloyd</em><br><em>Wright</em></h1>
+    <p class="cover-desc">A geographic visualization of 331 residential buildings designed by Frank Lloyd Wright across the United States — organized by state, city, and building name using a radial tidy tree.</p>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <span class="cover-meta-num">331</span>
+        <span class="cover-meta-lbl">Total Buildings</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-num">168</span>
+        <span class="cover-meta-lbl">Cities</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-num">33</span>
+        <span class="cover-meta-lbl">U.S. States</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-num">D3.js</span>
+        <span class="cover-meta-lbl">Tool</span>
+      </div>
+    </div>
+  </div>
+  <p class="scroll-hint">↓ scroll to read the report</p>
+</div>
+
+<hr class="divider">
+
+<!-- ── SECTION 1: THE STORY ── -->
+<div class="page">
+  <p class="section-num">01 — Deciding What to Show</p>
+  <h2 class="section-title">The Story</h2>
+  <p class="body-text">The main message is that Wright's work was <strong>not equally spread across America.</strong> A large number of his buildings were concentrated in a small number of cities, especially in <strong>Illinois.</strong> We wanted to show this concentration visually, while also making it possible to see every single building by name.</p>
+  <p class="body-text">A <strong>radial tree was the right choice</strong> because it shows three levels at the same time: state, city, and building name. The viewer can see the big picture and the detail together.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ── SECTION 2: AUDIENCE ── -->
+<div class="page">
+  <p class="section-num">02 — Defining the Audience</p>
+  <h2 class="section-title">Audience</h2>
+  <p class="body-text">The intended audience is <strong>architecture students, academics,</strong> and people who are generally interested in architectural history. This audience is familiar with Wright's work and would find value in seeing the geographic spread of his residential projects in detail.</p>
+</div>
+
+<hr class="divider">
+
+<!-- ── SECTION 3: DESIGN ── -->
+<div class="page">
+  <p class="section-num">03 — Designing the Visualization</p>
+  <h2 class="section-title">Design Decisions</h2>
+  <p class="body-text">The visualization was built using <strong>D3.js</strong> in Observable, then exported as an HTML file. The radial tidy tree layout was chosen directly from D3's library and adapted for this dataset.</p>
+  <div class="choices-grid">
+    <div class="choice-card">
+      <p class="choice-label">Dark Background</p>
+      <p class="choice-text">Creates a focused atmosphere that matches the historical and archival nature of the dataset.</p>
+    </div>
+    <div class="choice-card">
+      <p class="choice-label">Three Color Levels</p>
+      <p class="choice-text">Amber for the root (Wright), orange for states, yellow for cities, and brown for buildings to ensure each level is readable.</p>
+    </div>
+    <div class="choice-card">
+      <p class="choice-label">Hover Tooltip</p>
+      <p class="choice-text">When the user moves over a state or city node, a tooltip shows the name and number of buildings. This adds an interactive, exploratory layer.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ── TREE ── -->
+<div class="tree-section">
+  <div class="tree-header">
+    <p class="section-num" style="text-align:center;">The Visualization</p>
+    <h2 class="section-title" style="text-align:center; font-size:20px;">Residential Buildings of Frank Lloyd Wright (1887–1963)</h2>
+  </div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#c8921e;"></div>Root</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#9e3a1a;"></div>State</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#d4b882;"></div>City</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#5a4030;"></div>Building</div>
+  </div>
+
+  <div id="tree-container"></div>
+  <div class="tooltip" id="tooltip"></div>
+</div>
+
+<hr class="divider">
+
+<!-- ── SECTION 4: REFLECTION ── -->
+<div class="page">
+  <p class="section-num">04 — Evaluation & Reflection</p>
+  <h2 class="section-title">What the Data Reveals</h2>
+  <p class="body-text">The visualization confirms the expected finding: <strong>Illinois, Wisconsin, and Michigan</strong> are the most represented states. However, an unexpected finding emerged: within Illinois, <strong>Oak Park and River Forest</strong> have far more buildings than Chicago itself, suggesting Wright's practice was rooted in these suburbs, not the city center. This level of detail would not be visible in a simple bar chart.</p>
+</div>
+
+<hr class="divider">
+
+<div class="report-footer">
+  Source: <span>Wikipedia · List of Frank Lloyd Wright Buildings</span> &nbsp;·&nbsp;
+  Scraped via BeautifulSoup &nbsp;·&nbsp;
+  Filtered to U.S. Residential &nbsp;·&nbsp;
+  <span>MBL549E Case Study 4</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const data = {"name":"Frank Lloyd Wright","children":[{"name":"Alabama","children":[{"name":"Florence","children":[{"name":"Stanley Rosenbaum House and Addit…"}]}]},{"name":"Arizona","children":[{"name":"Paradise Valley","children":[{"name":"Arthur Pieper Residence"},{"name":"Harold C. Price Sr. House"}]},{"name":"Phoenix","children":[{"name":"Rose Pauson House"},{"name":"David and Gladys Wright House"},{"name":"Raymond Carlson Residence"},{"name":"Benjamin Adelman Residence"},{"name":"Jorgine Boomer Cottage"},{"name":"Norman Lykes House"}]}]},{"name":"California","children":[{"name":"Atherton","children":[{"name":"Arthur C. Mathews Residence"}]},{"name":"Bakersfield","children":[{"name":"Dr. George Ablin House"}]},{"name":"Bradbury","children":[{"name":"Wilbur C. Pearce Residence"}]},{"name":"Brentwood Heights","children":[{"name":"George D. Sturges House"}]},{"name":"Carmel","children":[{"name":"Mrs. Clinton Walker House"}]},{"name":"Hillsborough","children":[{"name":"Sidney Bazett House"}]},{"name":"Hollywood","children":[{"name":"Dr. John Storer House"}]},{"name":"Los Angeles","children":[{"name":"Aline Barnsdall House (Hollyhock…"},{"name":"Samuel Freeman House"}]},{"name":"Los Banos","children":[{"name":"Randall Fawcett House"}]},{"name":"Los Feliz","children":[{"name":"Charles Ennis House"}]},{"name":"Malibu","children":[{"name":"Arch Oboler House Complex"}]},{"name":"Modesto","children":[{"name":"Robert G. Walton House"}]},{"name":"Montecito","children":[{"name":"George C. Stewart House (Butterfl…"}]},{"name":"Orinda","children":[{"name":"Maynard P. Buehler House"}]},{"name":"Palo Alto","children":[{"name":"Paul R. Hanna House (Honeycomb Ho…"}]},{"name":"Pasadena","children":[{"name":"Alice Millard House (La Miniatura)"}]},{"name":"San Anselmo","children":[{"name":"Robert Berger Residence"},{"name":"Eddie's House (Robert Berger Dogh…"}]}]},{"name":"Connecticut","children":[{"name":"New Canaan","children":[{"name":"John L. Rayward House (Tirranna)"}]},{"name":"Stamford","children":[{"name":"Frank S. Sander Residence (Spring…"}]}]},{"name":"Delaware","children":[{"name":"Wilmington","children":[{"name":"Dudley Spencer House (Laurel)"}]}]},{"name":"Florida","children":[{"name":"Tallahassee","children":[{"name":"George Lewis House (Spring House)"}]}]},{"name":"Illinois","children":[{"name":"Aurora","children":[{"name":"William B. Greene House"}]},{"name":"Bannockburn","children":[{"name":"Allen Friedman House"}]},{"name":"Barrington Hills","children":[{"name":"Louis B. Fredrick House"},{"name":"Carl Post House"}]},{"name":"Batavia","children":[{"name":"Mrs. A.W. Gridley House (Ravine H…"}]},{"name":"Chicago","children":[{"name":"James A. Charnley House"},{"name":"Albert Sullivan House"},{"name":"Berry-MacHarg House"},{"name":"Dr. Allison W. Harlan House"},{"name":"Warren McArthur House and garage"},{"name":"George Blossom House"},{"name":"Robert W. Roloson Houses"},{"name":"Isidore H. Heller House"},{"name":"Joseph and Helen Husser House"},{"name":"William and Jessie M. Adams House"},{"name":"S.A. Foster House and Stable"},{"name":"Alfred W. Hebert House"},{"name":"Joseph J. Walser, Jr. House"},{"name":"Frederick C. Robie House"},{"name":"Raymond W. Evans House"},{"name":"L.K. Horner House"},{"name":"Oscar M. Steffens House"},{"name":"Guy C. Smith House"},{"name":"H. Howard Hyde House"},{"name":"Emil Bach House"}]},{"name":"Decatur","children":[{"name":"Edward P. Irving House"}]},{"name":"Elmhurst","children":[{"name":"F.B. Henderson House"}]},{"name":"Evanston","children":[{"name":"Charles A. Brown House"},{"name":"Oscar A. Johnson House"}]},{"name":"Flossmoor","children":[{"name":"Frederic Nicholas House"}]},{"name":"Geneva","children":[{"name":"P.D. Hoyt House"}]},{"name":"Glencoe","children":[{"name":"William A. Glasner House"},{"name":"Grace Fuller House"},{"name":"Edmund D. Brigham House"},{"name":"Sherman M. Booth Cottage"},{"name":"Sherman M. Booth House"},{"name":"Charles R. Perry House"},{"name":"Hollis R. Root House"},{"name":"William F. Kier House"},{"name":"William F. Ross House"},{"name":"Lute F. and Daniel Kissam House"}]},{"name":"Glenview","children":[{"name":"John O. Carr House"}]},{"name":"Hampshire","children":[{"name":"Robert Muirhead House"}]},{"name":"Highland Park","children":[{"name":"Ward Winfield Willits House"},{"name":"Mary W. Adams House"},{"name":"George Madison Millard House"}]},{"name":"Hinsdale","children":[{"name":"Frederick Bagley House"}]},{"name":"Kankakee","children":[{"name":"B. Harley Bradley House (Glenlloyd)"},{"name":"Warren Hickox House"}]},{"name":"Kenilworth","children":[{"name":"Hiram Baldwin House"}]},{"name":"La Grange","children":[{"name":"Robert G. Emmond House"},{"name":"W. Irving Clark House"},{"name":"Peter Goan House"},{"name":"Stephen M.B. Hunt House I"}]},{"name":"Lake Bluff","children":[{"name":"Herbert Angster House"},{"name":"Ida and Grace McElwain House"}]},{"name":"Lake Forest","children":[{"name":"Charles F. Glore Residence"}]},{"name":"Libertyville","children":[{"name":"Lloyd Lewis House"}]},{"name":"Lisle","children":[{"name":"Donald C. Duncan House"}]},{"name":"Oak Park","children":[{"name":"Frank Lloyd Wright House"},{"name":"Robert P. Parker House"},{"name":"Thomas H. Gale House"},{"name":"Walter H. Gale House"},{"name":"Francis J. Woolley House"},{"name":"Dr. H.W. Bassett House"},{"name":"Nathan G. Moore House I"},{"name":"Harrison P. Young House"},{"name":"George W. Smith House"},{"name":"Harry C. Goodrich House"},{"name":"Charles E. Roberts House"},{"name":"George W. Furbeck House"},{"name":"Rollin Furbeck House"},{"name":"William G. Fricke House"},{"name":"Frank W. Thomas House"},{"name":"William E. Martin House"},{"name":"Arthur Heurtley House"},{"name":"Edwin H. Cheney House"},{"name":"Peter A. Beachy House"},{"name":"Hills-DeCaro House"},{"name":"William H. Copeland House"},{"name":"Mrs. Thomas H. Gale House"},{"name":"Oscar B. Balch House"},{"name":"Harry S. Adams House"},{"name":"Nathan G. Moore House II"}]},{"name":"Peoria","children":[{"name":"Francis W. Little House I"}]},{"name":"River Forest","children":[{"name":"William H. Winslow House"},{"name":"Chauncey L. Williams House"},{"name":"Edward C. Waller House"},{"name":"E. Arthur Davenport House"},{"name":"Isabel Roberts House"},{"name":"J. Kibben Ingalls House"},{"name":"Walter Gerts House"},{"name":"N.N. Souther House"},{"name":"M.F. Russell House"},{"name":"Samuel Wilson House"},{"name":"McClintock House"},{"name":"R.N. Fellows House"},{"name":"A.E. Olson House"},{"name":"F.R. Donahue House"},{"name":"F.W. Collins House"},{"name":"Dr. I.A. Toren House"},{"name":"W.C. Gaddis House"},{"name":"E.G. Wheeler House"},{"name":"L.E. Murphy House"},{"name":"S.R. Flett House"},{"name":"S.D. Roberts House"},{"name":"C.J. LaMena House"},{"name":"C.G. Towers House"},{"name":"Frank Winters House"},{"name":"J.J. Willis House"},{"name":"D.H. Davis House"},{"name":"Roy Iverson House"},{"name":"W.H. Gordon House"},{"name":"P.W. Hazelton House"},{"name":"W.C. Rohray House"},{"name":"F.J. Hinckley House"},{"name":"C.J. Burras House"},{"name":"Clark H. Sherman Residence"},{"name":"Harry Hogan Model House"}]},{"name":"Riverside","children":[{"name":"Ferdinand F. Tomek House"},{"name":"Avery Coonley House"},{"name":"The Avery Coonley Playhouse"}]},{"name":"Rockford","children":[{"name":"Kenneth Laurent House"}]},{"name":"Springfield","children":[{"name":"Dana-Thomas House"}]},{"name":"Villa Park","children":[{"name":"Charles Heisen House"}]},{"name":"Wilmette","children":[{"name":"Frank J. Baker House"},{"name":"Lewis E. Burleigh House"},{"name":"Thomas E. Sullivan House"}]}]},{"name":"Indiana","children":[{"name":"Fort Wayne","children":[{"name":"John Haynes House"}]},{"name":"Gary","children":[{"name":"Ingwald Moe House"},{"name":"Wilbur Wynant House"}]},{"name":"Marion","children":[{"name":"Dr. Richard Davis House (Woodside)"}]},{"name":"Ogden Dunes","children":[{"name":"Andrew F. H. Armstrong House"}]},{"name":"South Bend","children":[{"name":"K.C. DeRhodes House"},{"name":"Herman T. Mossberg Residence"}]},{"name":"West Lafayette","children":[{"name":"John E. Christian House (Samara)"}]}]},{"name":"Iowa","children":[{"name":"Charles City","children":[{"name":"Alvin L. Miller House"}]},{"name":"Johnston","children":[{"name":"Paul J. and Ida Trier House"}]},{"name":"Marion","children":[{"name":"Douglas Grant House"}]},{"name":"Marshalltown","children":[{"name":"Robert H. Sunday House"}]},{"name":"Mason City","children":[{"name":"G.C. Stockman House"}]},{"name":"Monona","children":[{"name":"Delbert W. Meier House"}]},{"name":"Oskaloosa","children":[{"name":"Carroll Alsop House"}]},{"name":"Quasqueton","children":[{"name":"Lowell Walter Residence (Cedar Ro…"}]}]},{"name":"Kansas","children":[{"name":"Wichita","children":[{"name":"Henry J. Allen House (Allen-Lambe…"}]}]},{"name":"Kentucky","children":[{"name":"Frankfort","children":[{"name":"Rev. Jessie R. Zeigler House"}]}]},{"name":"Maryland","children":[{"name":"Bethesda","children":[{"name":"Robert Llewellyn Wright House"}]},{"name":"Pikesville","children":[{"name":"Joseph Euchtman House"}]}]},{"name":"Massachusetts","children":[{"name":"Amherst","children":[{"name":"Theodore Baird Residence"}]}]},{"name":"Michigan","children":[{"name":"Ann Arbor","children":[{"name":"William Palmer Residence"}]},{"name":"Benton Harbor","children":[{"name":"Howard E. Anthony House"}]},{"name":"Bloomfield Hills","children":[{"name":"Gregor S. Affleck House"},{"name":"Melvyn Maxwell Smith House"}]},{"name":"Detroit","children":[{"name":"Dorothy H. Turkel House"}]},{"name":"Galesburg","children":[{"name":"Galesburg Country Homes (The Acres)"},{"name":"David and Christine Weisblat House"},{"name":"Eric and Pat Pratt House"},{"name":"Samuel and Dorothy Eppstein House"},{"name":"Curtis and Lillian Meyer House"}]},{"name":"Grand Beach","children":[{"name":"Ernest Vosburgh House"},{"name":"Joseph J. Bagley House"},{"name":"William S. Carr House"}]},{"name":"Grand Rapids","children":[{"name":"Meyer May House"}]},{"name":"Kalamazoo","children":[{"name":"Robert and Rae Levin House"},{"name":"Ward and Helen McCartney House"},{"name":"Eric and Ann Brown House"},{"name":"Robert D. Winn House"}]},{"name":"Marquette","children":[{"name":"Abby Beecher Roberts House"}]},{"name":"Marquette Island","children":[{"name":"Arthur Heurtley Cottage"}]},{"name":"Northport","children":[{"name":"Amy Alpaugh Studio Residence"}]},{"name":"Okemos","children":[{"name":"Goetsch-Winckler House"},{"name":"Erling P. Brauner House"},{"name":"James Edwards House"},{"name":"Donald Schaberg House"}]},{"name":"Plymouth","children":[{"name":"Carlton D. Wall House (Snowflake)"},{"name":"Lewis H. Goddard Residence"}]},{"name":"St. Joseph","children":[{"name":"Dr. R. Bradford Harper House"},{"name":"Carl E. Schultz House"}]},{"name":"Whitehall","children":[{"name":"Thomas H. Gale Cottage"},{"name":"Mrs. George Gerts Double House"},{"name":"Walter Gerts Cottage"},{"name":"Mrs Thomas H. Gale Cottages"}]}]},{"name":"Minnesota","children":[{"name":"Austin","children":[{"name":"S.P. Elam Residence"}]},{"name":"Cloquet","children":[{"name":"R.W. Lindholm Residence (Mäntylä)"}]},{"name":"Deephaven","children":[{"name":"Francis W. Little House II"}]},{"name":"Minneapolis","children":[{"name":"Malcolm E. Willey House"},{"name":"Henry J. Neils House"}]},{"name":"Rochester","children":[{"name":"A.H. Bulbulian Residence"},{"name":"Thomas E. Keys Residence"},{"name":"James B. McBean Residence"}]},{"name":"St. Joseph","children":[{"name":"Dr. Edward & Laura Jane LaFond Ho…"}]},{"name":"St. Louis Park","children":[{"name":"Paul Olfelt House"}]},{"name":"Stillwater","children":[{"name":"Don E. Lovness Studio & Cottage"}]}]},{"name":"Mississippi","children":[{"name":"Jackson","children":[{"name":"J. Willis Hughes House (Fountainh…"}]},{"name":"Ocean Springs","children":[{"name":"Charnley-Norwood House"}]},{"name":"Pass Christian","children":[{"name":"Welbie L. Fuller Residence"}]}]},{"name":"Missouri","children":[{"name":"Kansas City","children":[{"name":"Clarence Sondern House"},{"name":"Frank Bott Residence"}]},{"name":"Kirkwood","children":[{"name":"Russell W. Kraus House"}]},{"name":"St. Louis","children":[{"name":"Theodore A. Pappas House"}]}]},{"name":"Nebraska","children":[{"name":"McCook","children":[{"name":"Harvey P. Sutton House"}]}]},{"name":"New Hampshire","children":[{"name":"Manchester","children":[{"name":"Dr. Isadore J. Zimmerman House"},{"name":"Toufic H. Kalil House"}]}]},{"name":"New Jersey","children":[{"name":"Bernardsville","children":[{"name":"James B. Christie House"}]},{"name":"Cherry Hill","children":[{"name":"J.A. Sweeton House"}]},{"name":"Glen Ridge","children":[{"name":"Stuart Richardson House"}]},{"name":"Millstone","children":[{"name":"Bachman-Wilson House"}]}]},{"name":"New York","children":[{"name":"Blauvelt","children":[{"name":"Socrates Zaferiou House"}]},{"name":"Buffalo","children":[{"name":"George F. Barton House"},{"name":"Darwin D. Martin House"},{"name":"Darwin D. Martin Carriage House"},{"name":"Darwin D. Martin Gardener's Cottage"},{"name":"William R. Heath House"},{"name":"Walter V. Davidson House"}]},{"name":"Derby","children":[{"name":"Isabelle R. Martin House (Graycli…"}]},{"name":"Great Neck Estates","children":[{"name":"Ben Rebhuhn House"}]},{"name":"Lake Mahopac","children":[{"name":"A.K. Chahroudi Cottage"}]},{"name":"New York","children":[{"name":"Usonian Exhibition House and Pavi…"}]},{"name":"Pleasantville","children":[{"name":"Usonia II (Usonia Homes)"},{"name":"Sol Friedman House (Toyhill)"},{"name":"Edward Serlin House"},{"name":"Roland Reisley House"}]},{"name":"Rochester","children":[{"name":"Edward E. Boynton House"}]},{"name":"Rye","children":[{"name":"Maximilian Hoffman House"}]},{"name":"Staten Island","children":[{"name":"William Cass House (Crimson Beech)"}]}]},{"name":"Ohio","children":[{"name":"Canton","children":[{"name":"Nathan Rubin Residence"},{"name":"John and Syd Dobkins House"},{"name":"Ellis A. Feiman House"}]},{"name":"Cincinnati","children":[{"name":"Gerald B. and Beverley Tonkens Ho…"},{"name":"Cedric G. and Patricia Neils Boul…"}]},{"name":"Indian Hill","children":[{"name":"William P. Boswell Residence"}]},{"name":"North Madison","children":[{"name":"Karl A. Staley House"}]},{"name":"Oberlin","children":[{"name":"Charles E. Weltzheimer House"}]},{"name":"Springfield","children":[{"name":"Burton J. Westcott House"}]},{"name":"Wellington","children":[{"name":"John A. Mosher House"}]},{"name":"Willoughby Hills","children":[{"name":"Louis A. Penfield House"}]}]},{"name":"Oklahoma","children":[{"name":"Bartlesville","children":[{"name":"Harold Price Jr. Residence"}]},{"name":"Tulsa","children":[{"name":"Richard Lloyd Jones House"}]}]},{"name":"Oregon","children":[{"name":"Wilsonville","children":[{"name":"C.E. Gordon House"}]}]},{"name":"Pennsylvania","children":[{"name":"Ardmore","children":[{"name":"Suntop Homes"}]},{"name":"Bear Run","children":[{"name":"Edgar J. Kaufmann Sr. House (Fall…"}]},{"name":"Chalkhill","children":[{"name":"I.N. Hagan House (Kentuck Knob)"}]}]},{"name":"South Carolina","children":[{"name":"Greenville","children":[{"name":"Gabrielle Austin House (Broad Mar…"}]},{"name":"Yemassee","children":[{"name":"C. Leigh Stevens House (Auldbrass…"}]}]},{"name":"Tennessee","children":[{"name":"Chattanooga","children":[{"name":"Seamour Shavin House"}]}]},{"name":"Texas","children":[{"name":"Amarillo","children":[{"name":"Sterling Kinney Residence"}]},{"name":"Bunker Hill Village","children":[{"name":"William L. Thaxton Jr. House"}]},{"name":"Dallas","children":[{"name":"John A. Gillin Residence"}]}]},{"name":"Utah","children":[{"name":"Bountiful","children":[{"name":"Don M. Stromquist House"}]}]},{"name":"Virginia","children":[{"name":"Falls Church","children":[{"name":"Loren B. Pope House (Pope-Leighey…"}]},{"name":"McLean","children":[{"name":"Luis Marden House"}]},{"name":"Virginia Beach","children":[{"name":"Andrew B. Cooke House"}]}]},{"name":"Washington","children":[{"name":"Normandy Park","children":[{"name":"William B. Tracy House"}]},{"name":"Sammamish","children":[{"name":"Ray Brandes House"}]},{"name":"Tacoma","children":[{"name":"Chauncey L. Griggs Residence"}]}]},{"name":"Wisconsin","children":[{"name":"Columbus","children":[{"name":"E. Clarke and Julia Arnold House"}]},{"name":"Delavan","children":[{"name":"Henry Wallis Cottage"},{"name":"Fred B. Jones House (Penwern)"},{"name":"George W. Spencer House"},{"name":"Charles S. Ross House"},{"name":"A.P. Johnson House"}]},{"name":"Dousman","children":[{"name":"Dr. Maurice Greenberg House"}]},{"name":"Fox Point","children":[{"name":"Albert Adelman House"}]},{"name":"Jefferson","children":[{"name":"Richard C. Smith House"}]},{"name":"Lancaster","children":[{"name":"Patrick and Margaret Kinney House"}]},{"name":"Madison","children":[{"name":"Lake Mendota Boathouse"},{"name":"Robert M. Lamp Cottage (Rocky Roo…"},{"name":"Robert M. Lamp House"},{"name":"Eugene A. Gilmore House (Airplane…"},{"name":"J. W. Groves House"},{"name":"Herbert Jacobs House I"},{"name":"Eugene Van Tamelen House"},{"name":"Arnold Jackson House (Skyview)"},{"name":"Walter Rudin House"}]},{"name":"Middleton","children":[{"name":"Herbert Jacobs House II"}]},{"name":"Milwaukee","children":[{"name":"Arthur L. Richards Small House"},{"name":"Frederick C. Bogk House"}]},{"name":"Mirror Lake","children":[{"name":"Seth C. Peterson Cottage"}]},{"name":"Mount Pleasant, Racine County","children":[{"name":"Karen Johnson Keland House"}]},{"name":"Oshkosh","children":[{"name":"Stephen M. B. Hunt House II"}]},{"name":"Plover","children":[{"name":"Frank Iber House"}]},{"name":"Racine","children":[{"name":"Henry and Lily Mitchell House"},{"name":"Thomas P. Hardy House"}]},{"name":"Richland Center","children":[{"name":"A.D. German Warehouse"}]},{"name":"Shorewood","children":[{"name":"Elizabeth Murphy House"}]},{"name":"Shorewood Hills","children":[{"name":"John C. Pew House"},{"name":"Unitarian Meeting House"}]},{"name":"Spring Green","children":[{"name":"Hillside Home School I"},{"name":"Hillside Home School II"},{"name":"Andrew T. Porter House (Tan-Y-Deri)"}]},{"name":"Two Rivers","children":[{"name":"Bernard Schwartz House (Still Bend)"}]},{"name":"Wausau","children":[{"name":"Charles L. Manson House"},{"name":"Duey and Julia Wright House"}]},{"name":"Wauwatosa","children":[{"name":"Joseph Mollica House"}]},{"name":"Wind Point","children":[{"name":"Herbert F. Johnson House (Wingspr…"}]}]},{"name":"Wyoming","children":[{"name":"Cody","children":[{"name":"Quintin Blair House"}]}]}]};
+
+const tooltip = document.getElementById('tooltip');
+
+function render() {
+  const container = document.getElementById('tree-container');
+  container.innerHTML = '';
+  const W = Math.min(container.clientWidth, 1060);
+  const H = W;
+  const cx = W * 0.5, cy = H * 0.5;
+  const radius = Math.min(W, H) / 2 - 80;
+
+  const tree = d3.tree()
+    .size([2 * Math.PI, radius])
+    .separation((a, b) => (a.parent === b.parent ? 1 : 2.5) / a.depth);
+
+  const root = tree(d3.hierarchy(data).sort((a, b) => d3.ascending(a.data.name, b.data.name)));
+  const svg = d3.create("svg").attr("width", W).attr("height", H).attr("viewBox", [-cx, -cy, W, H]);
+
+  const gridG = svg.append("g").attr("opacity", 0.06);
+  for (let r = radius * 0.25; r <= radius; r += radius * 0.25)
+    gridG.append("circle").attr("r", r).attr("fill", "none").attr("stroke", "#c8921e").attr("stroke-width", 0.5);
+
+  svg.append("g").attr("fill", "none").selectAll("path").data(root.links()).join("path")
+    .attr("d", d3.linkRadial().angle(d => d.x).radius(d => d.y))
+    .attr("stroke", d => d.target.depth === 1 ? "#9e3a1a" : d.target.depth === 2 ? "#7a5c38" : "#3d2e1a")
+    .attr("stroke-opacity", d => d.target.depth === 3 ? 0.25 : 0.5)
+    .attr("stroke-width", d => d.target.depth === 1 ? 1.5 : d.target.depth === 2 ? 1 : 0.5);
+
+  svg.append("g").selectAll("circle").data(root.descendants()).join("circle")
+    .attr("transform", d => `rotate(${d.x * 180 / Math.PI - 90}) translate(${d.y},0)`)
+    .attr("r", d => d.depth === 0 ? 7 : d.depth === 1 ? 4 : d.depth === 2 ? 2.5 : 1.5)
+    .attr("fill", d => d.depth === 0 ? "#c8921e" : d.depth === 1 ? "#9e3a1a" : d.depth === 2 ? "#d4b882" : "#5a4030")
+    .attr("stroke", d => d.depth <= 2 ? "rgba(15,11,7,0.6)" : "none")
+    .attr("stroke-width", 1).style("cursor", d => d.depth > 0 ? "pointer" : "default")
+    .on("mouseover", function(event, d) {
+      if (d.depth === 0) return;
+      const type = ["","State","City","Building"][d.depth];
+      const count = d.depth < 3 ? `<br><span class="tt-type">${d.descendants().filter(x=>x.depth===3).length} buildings</span>` : '';
+      tooltip.innerHTML = `<div class="tt-name">${d.data.name}</div><span class="tt-type">${type}</span>${count}`;
+      tooltip.classList.add('visible');
+      d3.select(this).attr("r", d.depth === 3 ? 3 : d.depth === 2 ? 4 : 6);
+    })
+    .on("mousemove", function(event) {
+      tooltip.style.left = (event.clientX + 14) + 'px';
+      tooltip.style.top  = (event.clientY - 10) + 'px';
+    })
+    .on("mouseout", function(event, d) {
+      tooltip.classList.remove('visible');
+      d3.select(this).attr("r", d.depth === 0 ? 7 : d.depth === 1 ? 4 : d.depth === 2 ? 2.5 : 1.5);
+    });
+
+  svg.append("g").attr("stroke-linejoin","round").attr("stroke-width",2.5)
+    .selectAll("text").data(root.descendants().filter(d => d.depth <= 2)).join("text")
+    .attr("transform", d => `rotate(${d.x*180/Math.PI-90}) translate(${d.y},0) rotate(${d.x>=Math.PI?180:0})`)
+    .attr("dy","0.31em").attr("x", d => d.x < Math.PI === !d.children ? 6 : -6)
+    .attr("text-anchor", d => d.x < Math.PI === !d.children ? "start" : "end")
+    .attr("paint-order","stroke").attr("stroke","#0f0b07")
+    .attr("fill", d => d.depth===0?"#e8a832":d.depth===1?"#c8921e":"#d4b882")
+    .attr("font-size", d => d.depth===0?"13px":d.depth===1?"10px":"8px")
+    .attr("font-family", d => d.depth===0?"'Playfair Display',serif":"'DM Mono',monospace")
+    .attr("font-weight", d => d.depth<=1?"700":"300")
+    .text(d => d.data.name);
+
+  svg.append("g").attr("stroke-linejoin","round").attr("stroke-width",2)
+    .selectAll("text").data(root.descendants().filter(d => d.depth===3)).join("text")
+    .attr("transform", d => `rotate(${d.x*180/Math.PI-90}) translate(${d.y},0) rotate(${d.x>=Math.PI?180:0})`)
+    .attr("dy","0.31em").attr("x", d => d.x < Math.PI ? 5 : -5)
+    .attr("text-anchor", d => d.x < Math.PI ? "start" : "end")
+    .attr("paint-order","stroke").attr("stroke","#0f0b07").attr("fill","#5a4030")
+    .attr("font-size","6.5px").attr("font-family","'DM Mono',monospace").attr("font-weight","300")
+    .text(d => d.data.name.length > 28 ? d.data.name.slice(0,26)+'…' : d.data.name);
+
+  container.appendChild(svg.node());
+}
+
+render();
+window.addEventListener('resize', () => { clearTimeout(window._rt); window._rt = setTimeout(render, 200); });
+</script>
+</body>
+</html>
