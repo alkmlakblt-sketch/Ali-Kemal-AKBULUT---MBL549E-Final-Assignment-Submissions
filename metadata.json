@@ -1,0 +1,46 @@
+{
+  "project": {
+    "title": "Form, Height & Glass: Architectural Parameters and Building Energy Performance",
+    "course": "MBL 549E \u2014 Special Topics in Architectural Design Computing",
+    "institution": "Istanbul Technical University, Graduate School",
+    "term": "Spring 2025\u20132026",
+    "author": "Ali Kemal Akbulut",
+    "instructor": "Assoc. Prof. Dr. Can Uzun"
+  },
+  "dataset": {
+    "source": "UCI Machine Learning Repository",
+    "source_id": 242,
+    "source_url": "https://archive.ics.uci.edu/dataset/242/energy+efficiency",
+    "original_authors": [
+      "Tsanas, A.",
+      "Xifara, A."
+    ],
+    "original_publication": "Tsanas & Xifara (2012). Energy and Buildings, 49, 560\u2013567.",
+    "doi": "10.1016/j.enbuild.2012.03.003",
+    "license": "CC BY 4.0",
+    "simulation_tool": "Ecotect",
+    "climate": "Athens, Greece (Mediterranean)",
+    "n_simulations": 768,
+    "n_inputs": 8,
+    "n_outputs": 2
+  },
+  "analysis": {
+    "method": "Random Forest (RF) variable importance",
+    "validation": "10-fold cross-validation \u00d7 100 repetitions",
+    "rf_mae_heating": 0.51,
+    "rf_mae_cooling": 1.42,
+    "irls_mae_heating": 2.14,
+    "irls_mae_cooling": 2.21,
+    "top_predictor": "X7_GlazingArea",
+    "top_predictor_rf_score": 93
+  },
+  "files": {
+    "dataset.pkl": "Full dataset as pandas DataFrame (768 rows \u00d7 10 columns)",
+    "dataDictionary.json": "Variable descriptions, types, ranges and encoding",
+    "metadata.json": "Project and dataset provenance information",
+    "requirements.txt": "Python dependencies",
+    "README.md": "Full project documentation"
+  },
+  "created": "2026-06-09",
+  "python_version": "3.11+"
+}
